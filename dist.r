@@ -1,6 +1,12 @@
 library("ctc")
 
-df <- read.table("distance.txt", sep="\t", col.names = c('a', 'b', 'sim'))
+## input should be Taxa1\tTaxa2\tDistance
+
+f <- file("stdin")
+open(f, blocking = T)
+df <- read.table(f, sep="\t", col.names = c('a', 'b', 'sim'))
+close(f)
+
 items <- with(df, unique(c(as.character(a), as.character(b))))
 distm <- with(df, structure(df$sim,
                             Size = length(items),
@@ -11,4 +17,5 @@ distm <- with(df, structure(df$sim,
                             class = "dist"))
 hc <- hclust(distm, method = "ward.D")
 newick <- hc2Newick(hc)
-write(newick, file = "dendo.newick")
+
+write(newick, stdout())
